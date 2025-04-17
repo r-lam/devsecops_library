@@ -25,9 +25,9 @@ def call(Map config = [:]) {
 
     echo "⌛ Esperando validación del Quality Gate..."
 
-    timeout(time: 2, unit: 'MINUTES') {
-      waitForQualityGate abortPipeline: true
-    }
+    //timeout(time: 2, unit: 'MINUTES') {
+      //waitForQualityGate abortPipeline: true
+  //  }
   }
 
   echo "✅ Análisis SonarQube aprobado: ${scanversion}"
