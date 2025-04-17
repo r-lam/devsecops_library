@@ -17,6 +17,7 @@ def call(Map config = [:]) {
           -Dsonar.projectName=${appname} \
           -Dsonar.projectVersion=${scanversion} \
           -Dsonar.sources=${env.PROJECT_ROOT} \
+          -Dsonar.exclusions=${config.exclusions ?: '**/*.java'} \
           -Dsonar.token=${SONAR_TOKEN} \
           -Dsonar.host.url=${env.SONARQUBE_URL}
       """
