@@ -7,7 +7,7 @@ def call(Map config = [:]) {
   def scanversion = "${appname}-${commitcode}-${timestamp}"
   def scannerHome = tool 'sonar-scanner'
 
-  echo "Ejecutando análisis SonarQube para: ${appname}"
+  echo "🔍 Ejecutando análisis SonarQube para: ${appname}"
 
   withSonarQubeEnv('sonarqube') {
     withCredentials([string(credentialsId: '31aa0c79-c552-4d6c-9c22-fd5e646438ad', variable: 'SONAR_TOKEN')]) {
@@ -16,20 +16,19 @@ def call(Map config = [:]) {
           -Dsonar.projectKey=${appname} \
           -Dsonar.projectName=${appname} \
           -Dsonar.projectVersion=${scanversion} \
-          -Dsonar.sources=${env.PROJECT_ROOT} \
           -Dsonar.exclusions=${config.exclusions ?: '**/*.java'} \
+          -Dsonar.sources=${env.PROJECT_ROOT} \
           -Dsonar.token=${SONAR_TOKEN} \
           -Dsonar.host.url=${env.SONARQUBE_URL}
       """
     }
 
-    echo "Esperando validación del Quality Gate..."
+    echo "⌛ Esperando validación del Quality Gate..."
 
-    // Validación del resultado del análisis
     timeout(time: 2, unit: 'MINUTES') {
       waitForQualityGate abortPipeline: true
     }
   }
 
-  echo "Análisis SonarQube aprobado: ${scanversion}"
+  echo "✅ Análisis SonarQube aprobado: ${scanversion}"
 }
