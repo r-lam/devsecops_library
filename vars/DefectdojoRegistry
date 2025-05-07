@@ -1,1 +1,36 @@
+def call(Map args = [:]) {
+    def projectUrl = args.get('projectUrl', env.PROJECT ?: '')
+    def tokenCredentialId = args.get('credentialId', 'd9bf1f60-98c3-4da5-9328-f92e17558541')
+    def defectDojoUrl = args.get('defectDojoUrl', 'http://defectdojo-django.defectdojo.svc')
+    
+    def appname = projectUrl.tokenize('/').last().replace('.git', '')
+    def commitcode = env.GIT_COMMIT ?: 'unknown'
+    def timestamp = new Date().format("yyyyMMdd-HHmm")
+    def scanversion = "${appname}-${commitcode}-${timestamp}"
+    def outputFile = "sast-${scanversion}.json"
+
+    echo "Subiendo reporte SAST de ${appname} a DefectDojo..."
+
+    withCredentials([string(credentialsId: tokenCredentialId, variable: 'DEFECTDOJO_TOKEN')]) {
+        sh """
+            file=\$(ls sast-*.json | head -n 1)
+            echo "Archivo detectado: \$file"
+            scan_date=\$(date +%Y-%m-%d)
+
+            curl -s -o /dev/null -w "%{http_code}" -X POST "${defectDojoUrl}/api/v2/import-scan/" \\
+              -H "Authorization: Token \$DEFECTDOJO_TOKEN" \\
+              -F "scan_type=Semgrep JSON Report" \\
+              -F "product_type_name=Research and Development" \\
+              -F "product_name=${appname}" \\
+              -F "engagement_name=Semgrep Scan \$(date +%Y-%m-%d)" \\
+              -F "auto_create_context=true" \\
+              -F "file=@\$file" \\
+              -F "active=true" \\
+              -F "verified=true" \\
+              -F "scan_date=\$scan_date" \\
+              -F "minimum_severity=Low" \\
+              -F "deduplication_on_engagement=true"
+        """
+    }
+}
 
