@@ -1,16 +1,14 @@
-def call(Map args = [:]) {
+def call(Map config = [:]) {
 
-    def projectUrl = args.get('projectUrl', env.PROJECT ?: '')
-    def tokenCredentialId = args.get('credentialId', 'd9bf1f60-98c3-4da5-9328-f92e17558541')
-    def defectDojoUrl = args.get('defectDojoUrl', 'http://defectdojo-django.defectdojo.svc')
-    
+    def projectUrl = config.get('projectUrl', env.PROJECT ?: '')
+    def tokenCredentialId = config.get('credentialId', 'd9bf1f60-98c3-4da5-9328-f92e17558541')
+    def defectDojoUrl = config.get('defectDojoUrl', 'http://defectdojo-django.defectdojo.svc')
+
     def appname = projectUrl.tokenize('/').last().replace('.git', '')
     def commitcode = env.GIT_COMMIT ?: 'unknown'
     def timestamp = new Date().format("yyyyMMdd-HHmm")
     def scanversion = "${appname}-${commitcode}-${timestamp}"
     def outputFile = "sast-${scanversion}.json"
-
-    echo "Subiendo reporte SAST de ${appname} a DefectDojo..."
 
     withCredentials([string(credentialsId: tokenCredentialId, variable: 'DEFECTDOJO_TOKEN')]) {
         sh """
@@ -34,4 +32,5 @@ def call(Map args = [:]) {
         """
     }
 }
+
 
