@@ -9,6 +9,7 @@ def call(Map config = [:]) {
     def timestamp = new Date().format("yyyyMMdd-HHmm")
     def scanversion = "${appname}-${commitcode}-${timestamp}"
     def outputFile = "sast-${scanversion}.json"
+    echo "NOMBRE APLICACION NOMBRE APLICACION NOMBRE APLICACION : $appname"
 
     withCredentials([string(credentialsId: tokenCredentialId, variable: 'DEFECTDOJO_TOKEN')]) {
         sh """
