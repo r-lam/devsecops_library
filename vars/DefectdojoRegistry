@@ -1,4 +1,5 @@
 def call(Map args = [:]) {
+
     def projectUrl = args.get('projectUrl', env.PROJECT ?: '')
     def tokenCredentialId = args.get('credentialId', 'd9bf1f60-98c3-4da5-9328-f92e17558541')
     def defectDojoUrl = args.get('defectDojoUrl', 'http://defectdojo-django.defectdojo.svc')
