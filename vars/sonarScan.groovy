@@ -6,6 +6,7 @@ def call(Map config = [:]) {
   def timestamp = new Date().format("yyyyMMdd-HHmm")
   def scanversion = "${appname}-${commitcode}-${timestamp}"
   def scannerHome = tool 'sonar-scanner'
+  def baseDir = env.PROJECT_ROOT
 
   echo "🔍 Ejecutando análisis SonarQube para: ${appname}"
 
@@ -16,6 +17,7 @@ def call(Map config = [:]) {
           -Dsonar.projectKey=${appname} \
           -Dsonar.projectName=${appname} \
           -Dsonar.projectVersion=${scanversion} \
+          -Dsonar.projectBaseDir=${baseDir}
           -Dsonar.sources=${env.PROJECT_ROOT} \
           -Dsonar.token=${SONAR_TOKEN} \
           -Dsonar.host.url=${env.SONARQUBE_URL}
